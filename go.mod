@@ -1,4 +1,4 @@
-module main
+module github.com/anthonygcamacho/firebase-admin-golang
 
 go 1.21.1
 
