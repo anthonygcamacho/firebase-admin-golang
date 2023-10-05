@@ -5,6 +5,7 @@ import (
 	"log"
 
 	firebase "firebase.google.com/go"
+	"firebase.google.com/go/auth"
 
 	"google.golang.org/api/option"
 )
@@ -30,6 +31,8 @@ func main() {
 
 	log.Print(result.Data())
 
+	// defer client.Close()
+
 	// Users --------------------------------------------------------------------------------------------
 
 	clientAuth, err := app.Auth(ctx)
@@ -52,8 +55,36 @@ func main() {
 		log.Fatalf("error getting user by email %s: %v\n", email, err)
 	}
 	// %+v : Show field names
-	log.Printf("Successfully fetched user data: %+v\n", userByEmail)
+	log.Printf("USER: %+v\n", userByEmail)
+	log.Printf("UID: %+v\n", userByEmail.UID)
+	log.Printf("DisplayName: %+v\n", userByEmail.DisplayName)
+	log.Printf("Email: %+v\n", userByEmail.Email)
+	log.Printf("PhoneNumber: %+v\n", userByEmail.PhoneNumber)
+	log.Printf("PhotoURL: %+v\n", userByEmail.PhotoURL)
+	log.Printf("ProviderID: %+v\n", userByEmail.ProviderID)
+	log.Printf("Verified: %+v\n", userByEmail.EmailVerified)
+	log.Printf("Disabled: %+v\n", userByEmail.Disabled)
+	log.Printf("CreationTimestamp: %+v\n", userByEmail.UserMetadata.CreationTimestamp)
+	log.Printf("LastLogInTimestamp: %+v\n", userByEmail.UserMetadata.LastLogInTimestamp)
+	log.Printf("LastRefreshTimestamp: %+v\n", userByEmail.UserMetadata.LastRefreshTimestamp)
+	log.Printf("UserInfo: %+v\n", userByEmail.UserInfo)
+	log.Printf("ProviderUserInfo: %+v\n", userByEmail.ProviderUserInfo[0])
+	log.Printf("UserMetadata: %+v\n", userByEmail.UserMetadata)
 
-	defer client.Close()
+	params := (&auth.UserToCreate{}).
+		Email("user@example.com").
+		EmailVerified(false).
+		PhoneNumber("+15555550100").
+		Password("secretPassword").
+		DisplayName("John Doe").
+		PhotoURL("http://www.example.com/12345678/photo.png").
+		Disabled(false)
+	u, err := clientAuth.CreateUser(ctx, params)
+	if err != nil {
+		log.Fatalf("error creating user: %v\n", err)
+	}
+	log.Printf("Successfully created user: %v\n", u)
+
+	// defer clientAuth.Close()
 
 }
